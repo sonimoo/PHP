@@ -78,11 +78,11 @@ echo "Праздники закончились!!! $message<br>";
 `echo` быстрее и поддерживает несколько аргументов, а `print` медленнее, всегда возвращает 1 и принимает только один аргумент.
 
 ## Библиография
-Документация PHP: https://www.php.net/docs.php
-Руководство по установке PHP: https://www.php.net/manual/ru/install.php
-Официальный сайт XAMPP: https://www.apachefriends.org
-Основы PHP: https://www.w3schools.com/php/
-Переменные и вывод в PHP: https://www.php.net/manual/ru/language.variables.php
+- Документация PHP: https://www.php.net/docs.php
+- Руководство по установке PHP: https://www.php.net/manual/ru/install.php
+- Официальный сайт XAMPP: https://www.apachefriends.org
+- Основы PHP: https://www.w3schools.com/php/
+- Переменные и вывод в PHP: https://www.php.net/manual/ru/language.variables.php
 
 ## Вывод
 
