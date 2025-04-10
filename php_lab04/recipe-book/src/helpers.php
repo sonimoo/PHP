@@ -56,28 +56,63 @@ function saveRecipe($title, $category, $ingredients, $description, $tags, $steps
     file_put_contents($file, $recipe . "\n", FILE_APPEND | LOCK_EX);
 }
 
-/**
- * Валидирует данные рецепта.
- * 
- * Проверяет обязательные поля, такие как название, категория, ингредиенты, описание, теги и шаги.
- * Если какое-либо поле пустое, добавляется соответствующее сообщение об ошибке в массив ошибок.
- *
- * @param string $title Название рецепта.
- * @param string $category Категория рецепта.
- * @param string $ingredients Ингредиенты рецепта.
- * @param string $description Описание рецепта.
- * @param array $tags Массив тегов, связанных с рецептом.
- * @param array $steps Массив шагов приготовления рецепта.
- * 
- * @return array Массив ошибок (ключ — название поля, значение — сообщение об ошибке).
- */
 function validateRecipe($title, $category, $ingredients, $description, $tags, $steps) {
     $errors = [];
-    if (empty($title)) $errors['title'] = 'Название рецепта обязательно';
-    if (empty($category)) $errors['category'] = 'Выберите категорию';
-    if (empty($ingredients)) $errors['ingredients'] = 'Введите ингредиенты';
-    if (empty($description)) $errors['description'] = 'Введите описание';
-    if (empty($tags)) $errors['tags'] = 'Выберите хотя бы один тег';
-    if (empty($steps)) $errors['steps'] = 'Добавьте хотя бы один шаг приготовления';
+
+    if (trim($title) === '') {
+        $errors['title'] = 'Название обязательно';
+    }
+
+    if (trim($category) === '') {
+        $errors['category'] = 'Категория обязательна';
+    }
+
+    if (trim($ingredients) === '') {
+        $errors['ingredients'] = 'Ингредиенты обязательны';
+    }
+
+    if (trim($description) === '') {
+        $errors['description'] = 'Описание обязательно';
+    }
+
+    if (!is_array($tags) || count($tags) === 0) {
+        $errors['tags'] = 'Выберите хотя бы один тэг';
+    }
+
+    if (!is_array($steps) || count(array_filter($steps, fn($s) => trim($s) !== '')) === 0) {
+        $errors['steps'] = 'Добавьте хотя бы один шаг приготовления';
+    }
+
     return $errors;
+}
+
+
+/**
+ * Возвращает список рецептов с пагинацией.
+ *
+ * @param int $page Текущий номер страницы (начиная с 1).
+ * @param int $perPage Количество рецептов на странице (по умолчанию 5).
+ *
+ * @return array Ассоциативный массив с ключами:
+ *   - 'recipes' => array список рецептов на текущей странице,
+ *   - 'total_pages' => int общее количество страниц,
+ *   - 'current_page' => int скорректированный текущий номер страницы.
+ */
+
+function getPaginatedRecipes($page, $perPage = 5) {
+    $allRecipes = loadRecipes();
+    $totalRecipes = count($allRecipes);
+    $totalPages = max(1, ceil($totalRecipes / $perPage));
+
+    // Ограничиваем номер страницы диапазоном [1, totalPages]
+    $page = max(1, min($page, $totalPages));
+
+    $offset = ($page - 1) * $perPage;
+    $recipes = array_slice($allRecipes, $offset, $perPage);
+
+    return [
+        'recipes' => $recipes,
+        'total_pages' => $totalPages,
+        'current_page' => $page
+    ];
 }
