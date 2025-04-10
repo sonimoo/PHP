@@ -4,12 +4,13 @@
  */
 require_once __DIR__ . '/../../src/helpers.php';
 
-/**
- * Загружаем все рецепты из файла
- * 
- * @var array $recipes Массив рецептов
- */
-$recipes = loadRecipes();
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+$pagination = getPaginatedRecipes($page);
+
+$recipes = $pagination['recipes'];
+$totalPages = $pagination['total_pages'];
+$currentPage = $pagination['current_page'];
+
 ?>
 
 <!DOCTYPE html>
@@ -38,6 +39,15 @@ $recipes = loadRecipes();
                 </li>
             <?php endforeach; ?>
         </ul>
+
+        <?php if ($totalPages > 1): ?>
+            <div class="pagination">
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <?= ($i === $currentPage) ? "<strong>$i</strong>" : "<a href='?page=$i'>$i</a>" ?>
+                <?php endfor; ?>
+            </div>
+        <?php endif; ?>
+
     <?php endif; ?>
 
     <a href="/recipe/create.php">Добавить новый рецепт</a>
