@@ -41,7 +41,10 @@ $latestRecipes = array_slice($recipes, -2);
                     <p><strong>Ингредиенты:</strong> <?= nl2br(htmlspecialchars($recipe['ingredients'])) ?></p>
                     <p><strong>Описание:</strong> <?= nl2br(htmlspecialchars($recipe['description'])) ?></p>
                     <p><strong>Тэги:</strong> <?= implode(', ', array_map('htmlspecialchars', $recipe['tags'])) ?></p>
-                    <p><strong>Дата:</strong> <?= htmlspecialchars($recipe['created_at']) ?></p>
+                    <p><strong>Шаги приготовления:</strong></p>
+                        <?php foreach ($recipe['steps'] as $step): ?>
+                            <p><?= htmlspecialchars($step) ?></p> <!-- Просто абзац для каждого шага -->
+                        <?php endforeach; ?>
                 </li>
             <?php endforeach; ?>
         </ul>
