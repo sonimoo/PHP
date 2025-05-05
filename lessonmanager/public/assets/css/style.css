@@ -1,0 +1,127 @@
+body {
+    background: #fff8e1;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+header {
+    background-color: #ffcc80;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2em;
+    color: #4e342e;
+}
+
+nav {
+    margin-top: 10px;
+}
+
+nav a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #6d4c41;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: #d84315;
+}
+
+main {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+}
+
+footer {
+    background-color: #ffe0b2;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.9em;
+    color: #795548;
+    margin-top: 20px;
+}
+
+h2, h3 {
+    color: #6a1b9a;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border: 2px solid #fbc02d;
+}
+
+table th, table td {
+    border: 1px solid #fbc02d;
+    padding: 8px;
+    text-align: center;
+}
+
+table th {
+    background-color: #fff59d;
+    color: #5d4037;
+}
+
+button, input[type="submit"] {
+    background-color: #ffb74d;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 10px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover, input[type="submit"]:hover {
+    background-color: #ffa000;
+}
+
+textarea, input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 2px solid #ffcc80;
+    border-radius: 8px;
+    font-size: 1em;
+}
+
+form {
+    background-color: #fff3e0;
+    padding: 15px;
+    border: 2px dashed #ffcc80;
+    border-radius: 10px;
+}
+
+blockquote {
+    background-color: #e1bee7;
+    padding: 10px;
+    border-left: 5px solid #ab47bc;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+.teacher-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.teacher-card {
+    background: #f0f8ff;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    width: 220px;
+}
