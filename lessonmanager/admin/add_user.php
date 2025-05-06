@@ -1,65 +1,78 @@
 <?php
+/**
+ * Файл добавления пользователей (admin/add_user.php)
+ *
+ * Этот скрипт позволяет администратору добавлять новых пользователей в систему.
+ * Обрабатывает форму регистрации, валидирует данные и сохраняет их в БД.
+ */
+
 require_once '../includes/auth.php';
 require_once '../includes/db.php';
+
+// Проверка аутентификации пользователя с ролью 'admin'
 checkAuth('admin');
 
+// Инициализация переменных для сообщений
 $error = '';
 $success = '';
 
+/**
+ * Обрабатывает POST-запрос при отправке формы добавления пользователя
+ *
+ * Валидирует входные данные:
+ * - Проверяет заполненность обязательных полей
+ * - Проверяет формат логина (3-20 символов, буквы/цифры/подчёркивания)
+ * - Проверяет допустимость роли (admin/student)
+ * - Валидирует email
+ * - Хэширует пароль перед сохранением
+ *
+ * В случае успеха добавляет пользователя в базу данных
+ * В случае ошибки устанавливает соответствующее сообщение
+ */
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $full_name = $_POST['full_name'];
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    $role = $_POST['role']; // 🟢 ВАЖНО: получаем роль из формы
+    // Получение и очистка входных данных
+    $full_name = trim($_POST['full_name'] ?? '');
+    $username = trim($_POST['username'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $role = $_POST['role'] ?? '';
+    $email = trim($_POST['email'] ?? '');
 
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-    if (empty($username) || empty($password) || empty($full_name)) {
+    // Валидация данных
+    if (empty($full_name) || empty($username) || empty($password) || empty($role) || empty($email)) {
         $error = "Пожалуйста, заполните все поля.";
+    } elseif (!preg_match('/^[a-zA-Z0-9_]{3,20}$/', $username)) {
+        $error = "Логин должен содержать только буквы, цифры и подчёркивания (3–20 символов).";
+    } elseif (!in_array($role, ['admin', 'student'])) {
+        $error = "Недопустимая роль пользователя.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Неверный формат email.";
     } else {
-        $hashed = password_hash($password, PASSWORD_DEFAULT);
+        // Хэширование пароля перед сохранением
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        /**
+         * Вставка нового пользователя в таблицу users
+         *
+         * @throws PDOException В случае ошибки SQL-запроса
+         */
         try {
-            $stmt = $pdo->prepare("INSERT INTO users (full_name, username, password, role) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$full_name, $username, $hashedPassword, 'student']);
-            $success = "Ученик успешно добавлен.";
+            $stmt = $pdo->prepare("
+                INSERT INTO users (full_name, username, password, role, email)
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $stmt->execute([
+                htmlspecialchars($full_name),
+                htmlspecialchars($username),
+                $hashedPassword,
+                $role,
+                htmlspecialchars($email)
+            ]);
+            $success = "Пользователь успешно добавлен.";
         } catch (PDOException $e) {
-            if ($e->getCode() == 23000) {
-                $error = "Пользователь с таким логином уже существует.";
-            } else {
-                $error = "Ошибка: " . $e->getMessage();
-            }
+            // Обработка ошибки дублирования уникального поля
+            $error = ($e->getCode() == 23000)
+                ? "Пользователь с таким логином уже существует."
+                : "Ошибка: " . $e->getMessage();
         }
     }
 }
-
-// Начинаем буферизацию вывода
-ob_start();
-?>
-
-<h2>Добавление ученика</h2>
-<?php if ($error): ?><p style="color:red"><?= htmlspecialchars($error) ?></p><?php endif; ?>
-<?php if ($success): ?><p style="color:green"><?= htmlspecialchars($success) ?></p><?php endif; ?>
-<form method="post">
-    <label>ФИО ученика: <input type="text" name="full_name" required></label><br>
-    <label>Логин: <input type="text" name="username" required></label><br>
-    <label>Пароль: <input type="password" name="password" required></label><br>
-    <label for="role">Роль:</label>
-    <select name="role" id="role" required>
-        <option value="student">Ученик</option>
-        <option value="admin">Администратор</option>
-    </select>
-
-    <button type="submit">Добавить</button>
-</form>
-<p><a href="/LessonManager/admin/index.php">Назад</a></p>
-
-<?php
-// Получаем содержимое страницы
-$content = ob_get_clean();
-
-// Название страницы
-$title = 'Добавить ученика';
-
-// Подключаем общий шаблон
-include '../includes/layout.php';
-?>

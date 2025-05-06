@@ -1,4 +1,13 @@
 <?php
+/**
+ * Главная страница системы LessonManager
+ * 
+ * Отображает:
+ * - Расписание занятий по дням недели
+ * - Последние 5 новостей
+ * - Список преподавателей с контактами
+ */
+
 require_once '../includes/db.php';
 
 // Получаем расписание
@@ -16,7 +25,7 @@ $schedule = $pdo->query("
 ")->fetchAll(PDO::FETCH_ASSOC);
 
 
-// Получаем новости
+// Получаем 5 последних новостей
 $news = $pdo->query("SELECT * FROM news ORDER BY created_at DESC LIMIT 5")->fetchAll();
 
 // Получаем преподавателей
@@ -26,7 +35,6 @@ $teachers = $pdo->query("
     JOIN subjects s ON t.subject_id = s.id
     ORDER BY t.full_name
 ")->fetchAll(PDO::FETCH_ASSOC);
-
 
 ob_start();
 ?>
@@ -61,6 +69,8 @@ foreach ($schedule as $lesson):
     </tr>
 <?php endforeach; ?>
 </tbody></table>
+<p>Сегодня <?= date('d.m.Y') ?>, <?= strftime('%A', strtotime('today')) ?>.</p>
+
 
 <h2>📰 Последние новости</h2>
 <?php foreach ($news as $item): ?>
